@@ -207,8 +207,8 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
   );
 
   return (
-    <div className="bg-white flex justify-center items-start w-full min-h-[600px] py-8">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl mx-auto border border-gray-200">
+    <div className="w-full">
+      <div className="bg-white shadow-lg rounded-xl w-full max-w-4xl mx-auto border border-gray-200">
         {/* Toolbar */}
         <div className="bg-blue-50 rounded-t-xl px-6 py-2 border-b border-gray-200 flex items-center justify-between">
           <span className="text-sm font-medium text-blue-900" role="status">
@@ -222,25 +222,25 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
         </div>
         
         {/* Campos Para y Asunto */}
-        <div className="px-6 pt-4 pb-2">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center border-b border-gray-100 pb-2">
+        <div className="px-8 pt-6 pb-2">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center border-b border-gray-100 pb-3">
               <label className="w-16 text-gray-500 text-xs">Para</label>
               <input
                 type="text"
                 disabled
                 value=""
-                className="flex-1 bg-transparent text-xs text-gray-700 outline-none"
+                className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
                 aria-label="Campo Para (deshabilitado)"
               />
             </div>
-            <div className="flex items-center border-b border-gray-100 pb-2">
+            <div className="flex items-center border-b border-gray-100 pb-3">
               <label className="w-16 text-gray-500 text-xs">Asunto</label>
               <input
                 type="text"
                 disabled
                 value=""
-                className="flex-1 bg-transparent text-xs text-gray-700 outline-none"
+                className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
                 aria-label="Campo Asunto (deshabilitado)"
               />
             </div>
@@ -248,14 +248,14 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
         </div>
         
         {/* Mensaje de previsualización */}
-        <div className="px-6 pt-4 pb-2">
+        <div className="px-8 pt-6 pb-2">
           <p className="text-gray-700 text-sm mb-4" role="status">
             Esta es la previsualización de cómo está quedando tu firma.
           </p>
         </div>
         
         {/* Área de firma */}
-        <div className="px-6 py-6">
+        <div className="px-8 py-8">
           <div className="bg-white w-full rounded-lg">
             {signatureContent}
           </div>

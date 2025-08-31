@@ -24,8 +24,8 @@ interface SignatureFormProps {
 }
 
 const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdatePosition, onAddPosition, onRemovePosition, onReset }) => {
-  const inputClass = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-800";
-  const labelClass = "block text-sm font-medium text-gray-700 mb-2";
+  const inputClass = "w-full px-3 py-2 border-b border-gray-200 focus:border-blue-500 focus:outline-none transition-all duration-200 text-gray-800 bg-transparent";
+  const labelClass = "block text-sm font-medium text-gray-600 mb-1";
 
   type ErrorMessage = '' | 'Debe tener al menos 3 caracteres.' | 'No puede superar los 100 caracteres.' | 'Campo obligatorio.' | 'Correo inválido.';
   const [errors, setErrors] = useState<{ fullName: ErrorMessage; positions: ErrorMessage[]; email: ErrorMessage }>({
@@ -85,12 +85,12 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
   }, [data]);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-800">Datos de la Firma</h2>
+    <div className="bg-white">
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-2xl font-medium text-gray-800">Datos de la Firma</h2>
         <button
           onClick={onReset}
-          className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+          className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 border-b border-transparent hover:border-gray-300 transition-all duration-200"
         >
           Limpiar
         </button>
@@ -188,12 +188,12 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
         </div>
 
         {/* Redes sociales */}
-        <div className="pt-6 mt-6">
-          <h3 className="text-base font-semibold text-gray-800 mb-3">Enlaces Académicos</h3>
-          <div className="flex flex-col space-y-4">
-            <div className="flex items-center gap-2">
-              <GraduationCap className="w-5 h-5 text-black" aria-hidden="true" />
-              <span className="text-sm text-gray-700 w-28">Google Scholar</span>
+        <div className="pt-8 mt-8 border-t border-gray-100">
+          <h3 className="text-lg font-medium text-gray-700 mb-4">Enlaces Académicos</h3>
+          <div className="flex flex-col space-y-6">
+            <div className="flex items-center gap-3">
+              <GraduationCap className="w-4 h-4 text-gray-500" aria-hidden="true" />
+              <span className="text-sm text-gray-600 w-24">Google Scholar</span>
               <input
                 type="url"
                 value={data.social?.googleScholar || ''}
@@ -203,8 +203,8 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
               />
             </div>
             <div className="flex items-center gap-2">
-              <Linkedin className="w-5 h-5 text-black" aria-hidden="true" />
-              <span className="text-sm text-gray-700 w-28">LinkedIn</span>
+              <Linkedin className="w-4 h-4 text-gray-500" aria-hidden="true" />
+              <span className="text-sm text-gray-600 w-24">LinkedIn</span>
               <input
                 type="url"
                 value={data.social?.linkedin || ''}
@@ -213,9 +213,9 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
                 className={`flex-1 ${inputClass}`}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Globe className="w-5 h-5 text-black" aria-hidden="true" />
-              <span className="text-sm text-gray-700 w-28">ORCID/Sitio</span>
+            <div className="flex items-center gap-3">
+              <Globe className="w-4 h-4 text-gray-500" aria-hidden="true" />
+              <span className="text-sm text-gray-600 w-24">ORCID/Sitio</span>
               <input
                 type="url"
                 value={data.additionalLink || ''}
