@@ -2,7 +2,7 @@ import React from 'react';
 
 interface SignatureData {
   fullName: string;
-  position: string;
+  positions: string[];
   email: string;
   phone?: string;
   additionalLink?: string;
@@ -14,94 +14,61 @@ interface SignaturePreviewProps {
 }
 
 const SignaturePreview: React.FC<SignaturePreviewProps> = ({ data }) => {
+  const textRef = React.useRef<HTMLDivElement>(null);
+  const [logoSize, setLogoSize] = React.useState(90);
+
+  React.useEffect(() => {
+    const ref = textRef.current;
+    if (!ref) return;
+    const updateSize = () => {
+      const height = ref.offsetHeight;
+      // El logo será igual al alto del bloque de texto, ajustándose hasta la última línea
+      let size = Math.max(80, Math.min(200, height * 0.95));
+      setLogoSize(size);
+    };
+    updateSize();
+    const observer = new window.ResizeObserver(updateSize);
+    observer.observe(ref);
+    return () => observer.disconnect();
+  }, [data.fullName, data.positions, data.email, data.phone, data.additionalLink, data.additionalLinkText]);
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Vista Previa</h3>
-      
-      <div className="signature-preview" style={{ fontFamily: 'Roboto, Arial, sans-serif' }}>
-        <table cellPadding="0" cellSpacing="0" style={{ borderCollapse: 'collapse', width: '100%' }}>
-          <tr>
-            <td style={{ verticalAlign: 'top', paddingRight: '16px', width: '80px' }}>
-              <img 
-                src="https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=80&h=80"
-                alt="UCN Logo"
-                style={{ width: '70px', height: '70px', borderRadius: '4px' }}
-              />
-            </td>
-            <td style={{ verticalAlign: 'top' }}>
-              <div>
-                {data.fullName && (
-                  <div style={{ 
-                    fontSize: '16px', 
-                    fontWeight: 'bold', 
-                    color: '#2C3E50',
-                    marginBottom: '4px'
-                  }}>
-                    {data.fullName}
-                  </div>
-                )}
-                
-                {data.position && (
-                  <div style={{ 
-                    fontSize: '14px', 
-                    color: '#555555',
-                    marginBottom: '8px',
-                    lineHeight: '1.4'
-                  }}>
-                    {data.position}
-                  </div>
-                )}
-
-                <div style={{ fontSize: '13px', lineHeight: '1.5' }}>
-                  {data.email && (
-                    <div style={{ marginBottom: '3px' }}>
-                      <span style={{ color: '#555555' }}>✉ </span>
-                      <a href={`mailto:${data.email}`} style={{ 
-                        color: '#6B88A3', 
-                        textDecoration: 'none' 
-                      }}>
-                        {data.email}
-                      </a>
-                    </div>
-                  )}
-                  
-                  {data.phone && (
-                    <div style={{ marginBottom: '3px' }}>
-                      <span style={{ color: '#555555' }}>📞 </span>
-                      <span style={{ color: '#555555' }}>{data.phone}</span>
-                    </div>
-                  )}
-                  
-                  {data.additionalLink && (
-                    <div style={{ marginBottom: '3px' }}>
-                      <span style={{ color: '#555555' }}>🔗 </span>
-                      <a href={data.additionalLink} style={{ 
-                        color: '#6B88A3', 
-                        textDecoration: 'none' 
-                      }}>
-                        {data.additionalLinkText || data.additionalLink}
-                      </a>
-                    </div>
-                  )}
-                </div>
-
-                <div style={{
-                  marginTop: '12px',
-                  paddingTop: '8px',
-                  borderTop: '1px solid #e5e5e5'
-                }}>
-                  <div style={{ 
-                    fontSize: '12px', 
-                    color: '#B65A2C',
-                    fontWeight: '600'
-                  }}>
-                    Universidad Católica del Norte
-                  </div>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </table>
+    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm w-full min-w-[700px] mx-auto" style={{ minWidth: '700px' }}>
+      <div className="flex items-stretch gap-6" style={{ minWidth: '650px' }}>
+        <div className="flex h-full">
+          <img
+            src="/disc.svg"
+            alt="Logo UCN"
+            style={{ width: logoSize, height: logoSize, objectFit: 'contain', display: 'block' }}
+          />
+        </div>
+        <div className="flex-1 min-w-0" ref={textRef} style={{ minWidth: '500px' }}>
+          <div className="mb-1">
+            {data.fullName && (
+              <span className="font-bold text-lg">{data.fullName}</span>
+            )}
+          </div>
+          {(data.positions || []).filter(Boolean).map((pos, idx) => (
+            <div key={idx} className="text-base text-gray-800 leading-tight mb-1">{pos}</div>
+          ))}
+          <div className="text-sm text-gray-500 leading-tight mb-1 whitespace-nowrap">Departamento de Ingeniería de Sistemas y Computación</div>
+          <div className="text-sm text-gray-500 leading-tight mb-1">Universidad Católica del Norte</div>
+          <div className="text-sm text-gray-500 leading-tight mb-1">Av. Angamos 0610, Antofagasta</div>
+          {data.phone && (
+            <div className="text-sm text-gray-800 mb-1">{data.phone}</div>
+          )}
+          {data.email && (
+            <div className="text-sm mb-1">
+              <a href={`mailto:${data.email}`} className="text-blue-700 underline">{data.email}</a>
+            </div>
+          )}
+          {data.additionalLink && (
+            <div className="text-sm mb-1">
+              <a href={data.additionalLink} className="text-blue-700 underline">{data.additionalLinkText || data.additionalLink}</a>
+            </div>
+          )}
+          <hr className="mt-4 border-blue-900" />
+        </div>
       </div>
     </div>
   );

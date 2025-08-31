@@ -1,135 +1,135 @@
 import { useState } from 'react';
 
-interface SignatureData {
+export interface SignatureData {
   fullName: string;
-  position: string;
   email: string;
-  phone?: string;
-  additionalLink?: string;
-  additionalLinkText?: string;
+  phone: string;
+  positions: string[];
+  department: string;
+  campus: string;
 }
 
 export const useSignatureGenerator = () => {
   const [signatureData, setSignatureData] = useState<SignatureData>({
     fullName: '',
-    position: '',
     email: '',
     phone: '',
-    additionalLink: '',
-    additionalLinkText: ''
+    positions: [''],
+    department: '',
+    campus: ''
   });
 
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const generateHTML = () => {
-    return `
-<table cellpadding="0" cellspacing="0" style="border-collapse: collapse; font-family: Roboto, Arial, sans-serif;">
-  <tr>
-    <td style="vertical-align: top; padding-right: 16px; width: 80px;">
-      <img src="https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=80&h=80" alt="UCN Logo" style="width: 70px; height: 70px; border-radius: 4px;" />
-    </td>
-    <td style="vertical-align: top;">
-      <div>
-        ${signatureData.fullName ? `
-        <div style="font-size: 16px; font-weight: bold; color: #2C3E50; margin-bottom: 4px;">
-          ${signatureData.fullName}
-        </div>` : ''}
-        
-        ${signatureData.position ? `
-        <div style="font-size: 14px; color: #555555; margin-bottom: 8px; line-height: 1.4;">
-          ${signatureData.position}
-        </div>` : ''}
-
-        <div style="font-size: 13px; line-height: 1.5;">
-          ${signatureData.email ? `
-          <div style="margin-bottom: 3px;">
-            <span style="color: #555555;">✉ </span>
-            <a href="mailto:${signatureData.email}" style="color: #6B88A3; text-decoration: none;">
-              ${signatureData.email}
-            </a>
-          </div>` : ''}
-          
-          ${signatureData.phone ? `
-          <div style="margin-bottom: 3px;">
-            <span style="color: #555555;">📞 </span>
-            <span style="color: #555555;">${signatureData.phone}</span>
-          </div>` : ''}
-          
-          ${signatureData.additionalLink ? `
-          <div style="margin-bottom: 3px;">
-            <span style="color: #555555;">🔗 </span>
-            <a href="${signatureData.additionalLink}" style="color: #6B88A3; text-decoration: none;">
-              ${signatureData.additionalLinkText || signatureData.additionalLink}
-            </a>
-          </div>` : ''}
-        </div>
-
-        <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid #e5e5e5;">
-          <div style="font-size: 12px; color: #B65A2C; font-weight: 600;">
-            Universidad Católica del Norte
-          </div>
-        </div>
-      </div>
-    </td>
-  </tr>
-</table>`.trim();
-  };
-
-  const copyToClipboard = async () => {
-    try {
-      const html = generateHTML();
-      
-      // Create a blob with HTML content
-      const blob = new Blob([html], { type: 'text/html' });
-      const clipboardItem = new ClipboardItem({
-        'text/html': blob,
-        'text/plain': new Blob([html], { type: 'text/plain' })
-      });
-      
-      await navigator.clipboard.write([clipboardItem]);
-      setCopySuccess(true);
-      
-      // Reset success message after 3 seconds
-      setTimeout(() => setCopySuccess(false), 3000);
-    } catch (error) {
-      console.error('Error copying to clipboard:', error);
-      
-      // Fallback method
-      try {
-        await navigator.clipboard.writeText(generateHTML());
-        setCopySuccess(true);
-        setTimeout(() => setCopySuccess(false), 3000);
-      } catch (fallbackError) {
-        console.error('Fallback copy failed:', fallbackError);
-      }
-    }
-  };
-
-  const updateField = (field: keyof SignatureData, value: string) => {
+  const updateField = (field: keyof SignatureData, value: string | string[]) => {
     setSignatureData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
+  const updateSignatureData = (field: keyof SignatureData, value: string | string[]) => {
+    updateField(field, value);
+  };
+
+  const addPosition = () => {
+    setSignatureData(prev => ({
+      ...prev,
+      positions: [...prev.positions, '']
+    }));
+  };
+
+  const updatePosition = (index: number, value: string) => {
+    setSignatureData(prev => ({
+      ...prev,
+      positions: prev.positions.map((pos, i) => i === index ? value : pos)
+    }));
+  };
+
+  const removePosition = (index: number) => {
+    setSignatureData(prev => ({
+      ...prev,
+      positions: prev.positions.filter((_, i) => i !== index)
+    }));
+  };
+
   const resetForm = () => {
     setSignatureData({
       fullName: '',
-      position: '',
       email: '',
       phone: '',
-      additionalLink: '',
-      additionalLinkText: ''
+      positions: [''],
+      department: '',
+      campus: ''
     });
     setCopySuccess(false);
+  };
+
+  const generateHTML = (): string => {
+    const positionsHTML = signatureData.positions
+      .filter(pos => pos.trim())
+      .map(pos => `<div style="font-size: 16px; color: #1f2937; line-height: 1.25; margin-bottom: 4px;">${pos}</div>`)
+      .join('');
+
+    return `
+    <table cellpadding="0" cellspacing="0" style="border-collapse: collapse; min-width: 650px;">
+      <tr style="vertical-align: top;">
+        <td style="padding-right: 24px; vertical-align: top;">
+          <img src="https://i.postimg.cc/3RMdxN8Z/disc.png" alt="Logo UCN" style="width: 90px; height: 90px; object-fit: contain; display: block; vertical-align: top;">
+        </td>
+        <td style="vertical-align: top; min-width: 500px;">
+          <div>
+            <div style="margin-bottom: 4px;">
+              <span style="font-size: 18px; font-weight: bold; color: #000000;">${signatureData.fullName}</span>
+            </div>
+            ${positionsHTML}
+            <div style="font-size: 14px; color: #6b7280; line-height: 1.25; margin-bottom: 4px; white-space: nowrap;">Departamento de Ingeniería de Sistemas y Computación</div>
+            <div style="font-size: 14px; color: #6b7280; line-height: 1.25; margin-bottom: 4px;">Universidad Católica del Norte</div>
+            <div style="font-size: 14px; color: #6b7280; line-height: 1.25; margin-bottom: 4px;">Av. Angamos 0610, Antofagasta</div>
+            ${signatureData.phone ? `<div style="font-size: 14px; color: #1f2937; margin-bottom: 4px;">${signatureData.phone}</div>` : ''}
+            ${signatureData.email ? `<div style="font-size: 14px; margin-bottom: 4px;"><a href="mailto:${signatureData.email}" style="color: #1d4ed8; text-decoration: underline;">${signatureData.email}</a></div>` : ''}
+            <hr style="margin-top: 16px; border: none; border-top: 1px solid #1e3a8a;">
+          </div>
+        </td>
+      </tr>
+    </table>
+    `;
+  };
+
+  const copyToClipboard = async (): Promise<boolean> => {
+    try {
+      const html = generateHTML();
+      
+      if (navigator.clipboard && window.ClipboardItem) {
+        const item = new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([signatureData.fullName], { type: 'text/plain' })
+        });
+        await navigator.clipboard.write([item]);
+      } else {
+        await navigator.clipboard.writeText(html);
+      }
+      
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 3000);
+      
+      return true;
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      return false;
+    }
   };
 
   return {
     signatureData,
     copySuccess,
     updateField,
-    copyToClipboard,
+    updateSignatureData,
+    addPosition,
+    updatePosition,
+    removePosition,
     resetForm,
-    generateHTML
+    generateHTML,
+    copyToClipboard
   };
 };

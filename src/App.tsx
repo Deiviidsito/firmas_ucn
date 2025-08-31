@@ -10,12 +10,15 @@ function App() {
     signatureData,
     copySuccess,
     updateField,
+    updatePosition,
+    addPosition,
     copyToClipboard,
     resetForm
   } = useSignatureGenerator();
 
   // Check if required fields are filled
-  const isFormValid = signatureData.fullName && signatureData.position && signatureData.email;
+  const hasPosition = signatureData.positions && signatureData.positions.some(pos => pos.trim() !== '');
+  const isFormValid = signatureData.fullName && hasPosition && signatureData.email;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -28,6 +31,8 @@ function App() {
             <SignatureForm
               data={signatureData}
               onUpdate={updateField}
+              onUpdatePosition={updatePosition}
+              onAddPosition={addPosition}
               onReset={resetForm}
             />
           </div>

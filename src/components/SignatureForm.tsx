@@ -3,7 +3,7 @@ import { Mail, Phone, User, Briefcase, Link, Globe } from 'lucide-react';
 
 interface SignatureData {
   fullName: string;
-  position: string;
+  positions: string[];
   email: string;
   phone?: string;
   additionalLink?: string;
@@ -13,10 +13,12 @@ interface SignatureData {
 interface SignatureFormProps {
   data: SignatureData;
   onUpdate: (field: keyof SignatureData, value: string) => void;
+  onUpdatePosition: (index: number, value: string) => void;
+  onAddPosition: () => void;
   onReset: () => void;
 }
 
-const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onReset }) => {
+const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdatePosition, onAddPosition, onReset }) => {
   const inputClass = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-800";
   const labelClass = "block text-sm font-medium text-gray-700 mb-2";
 
@@ -51,20 +53,28 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onReset }
         </div>
 
         <div>
-          <label htmlFor="position" className={labelClass}>
+          <label className={labelClass}>
             <div className="flex items-center gap-2">
               <Briefcase className="w-4 h-4 text-gray-600" />
-              Cargo / Título *
+              Cargo(s) / Título(s) *
             </div>
           </label>
-          <input
-            type="text"
-            id="position"
-            value={data.position}
-            onChange={(e) => onUpdate('position', e.target.value)}
-            placeholder="Ej: Académico, Departamento de Ingeniería de Sistemas y Computación"
-            className={inputClass}
-          />
+          <div className="space-y-2">
+            {data.positions.map((pos, idx) => (
+              <div key={idx} className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  value={pos}
+                  onChange={(e) => onUpdatePosition(idx, e.target.value)}
+                  placeholder={`Ej: Cargo ${idx + 1}`}
+                  className={inputClass}
+                />
+                {idx === data.positions.length - 1 && (
+                  <button type="button" onClick={onAddPosition} className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition">+</button>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div>
