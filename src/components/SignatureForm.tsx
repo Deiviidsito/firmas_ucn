@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, Phone, User, Briefcase, Link, Globe } from 'lucide-react';
 
 interface SignatureData {
@@ -8,6 +8,10 @@ interface SignatureData {
   phone?: string;
   additionalLink?: string;
   additionalLinkText?: string;
+  social?: {
+    linkedin?: string;
+    googleScholar?: string;
+  };
 }
 
 interface SignatureFormProps {
@@ -15,12 +19,65 @@ interface SignatureFormProps {
   onUpdate: (field: keyof SignatureData, value: string) => void;
   onUpdatePosition: (index: number, value: string) => void;
   onAddPosition: () => void;
+  onRemovePosition: (index: number) => void;
   onReset: () => void;
 }
 
-const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdatePosition, onAddPosition, onReset }) => {
+const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdatePosition, onAddPosition, onRemovePosition, onReset }) => {
   const inputClass = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-800";
   const labelClass = "block text-sm font-medium text-gray-700 mb-2";
+
+  const [errors, setErrors] = useState({
+    fullName: '',
+    positions: [] as string[],
+    email: '',
+  });
+  const [touched, setTouched] = useState({
+    fullName: false,
+    positions: [] as boolean[],
+    email: false,
+  });
+
+  // Validaciones
+  const validate = () => {
+    let valid = true;
+    const newErrors = { fullName: '', positions: [], email: '' };
+
+    // Nombre completo
+    if (!data.fullName || data.fullName.length < 3) {
+      newErrors.fullName = 'Debe tener al menos 3 caracteres.';
+      valid = false;
+    } else if (data.fullName.length > 100) {
+      newErrors.fullName = 'No puede superar los 100 caracteres.';
+      valid = false;
+    }
+
+    // Cargo(s)
+    newErrors.positions = data.positions.map(pos => {
+      if (!pos || pos.length < 3) return 'Debe tener al menos 3 caracteres.';
+      if (pos.length > 100) return 'No puede superar los 100 caracteres.';
+      return '';
+    });
+    if (newErrors.positions.some(e => e)) valid = false;
+
+    // Email
+    if (!data.email) {
+      newErrors.email = 'Campo obligatorio.';
+      valid = false;
+    } else if (!/^\S+@\S+\.\S+$/.test(data.email)) {
+      newErrors.email = 'Correo inválido.';
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  // Validar en cada cambio
+  React.useEffect(() => {
+    validate();
+    // eslint-disable-next-line
+  }, [data]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -35,11 +92,12 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
       </div>
 
       <div className="space-y-6">
+        {/* ...existing code... */}
         <div>
           <label htmlFor="fullName" className={labelClass}>
             <div className="flex items-center gap-2">
               <User className="w-4 h-4 text-gray-600" />
-              Nombre Completo *
+              Nombre Completo <span className="text-red-600">*</span>
             </div>
           </label>
           <input
@@ -47,31 +105,43 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
             id="fullName"
             value={data.fullName}
             onChange={(e) => onUpdate('fullName', e.target.value)}
+            onBlur={() => setTouched(t => ({ ...t, fullName: true }))}
             placeholder="Ej: Matías Saavedra"
-            className={inputClass}
+            className={inputClass + (errors.fullName && touched.fullName ? ' border-red-500' : '')}
           />
+          {errors.fullName && touched.fullName && <p className="text-xs text-red-600 mt-1">{errors.fullName}</p>}
         </div>
 
         <div>
           <label className={labelClass}>
             <div className="flex items-center gap-2">
               <Briefcase className="w-4 h-4 text-gray-600" />
-              Cargo(s) / Título(s) *
+              Cargo(s) / Título(s) <span className="text-red-600">*</span>
             </div>
           </label>
           <div className="space-y-2">
             {data.positions.map((pos, idx) => (
-              <div key={idx} className="flex gap-2 items-center">
-                <input
-                  type="text"
-                  value={pos}
-                  onChange={(e) => onUpdatePosition(idx, e.target.value)}
-                  placeholder={`Ej: Cargo ${idx + 1}`}
-                  className={inputClass}
-                />
-                {idx === data.positions.length - 1 && (
-                  <button type="button" onClick={onAddPosition} className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition">+</button>
-                )}
+              <div key={idx} className="flex flex-col items-start gap-0">
+                <div className="w-full flex gap-2 items-center">
+                  <input
+                    type="text"
+                    value={pos}
+                    onChange={(e) => onUpdatePosition(idx, e.target.value)}
+                    onBlur={() => setTouched(t => ({
+                      ...t,
+                      positions: Object.assign([], t.positions, { [idx]: true })
+                    }))}
+                    placeholder={`Ej: Cargo ${idx + 1}`}
+                    className={inputClass + (errors.positions[idx] && touched.positions[idx] ? ' border-red-500' : '')}
+                  />
+                  {data.positions.length > 1 && idx > 0 && (
+                    <button type="button" onClick={() => onRemovePosition(idx)} className="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition">–</button>
+                  )}
+                  {idx === data.positions.length - 1 && data.positions.length < 3 && (
+                    <button type="button" onClick={onAddPosition} className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition">+</button>
+                  )}
+                </div>
+                {errors.positions[idx] && touched.positions[idx] && <p className="text-xs text-red-600 mt-1 text-left w-full">{errors.positions[idx]}</p>}
               </div>
             ))}
           </div>
@@ -81,7 +151,7 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
           <label htmlFor="email" className={labelClass}>
             <div className="flex items-center gap-2">
               <Mail className="w-4 h-4 text-gray-600" />
-              Correo Electrónico *
+              Correo Electrónico <span className="text-red-600">*</span>
             </div>
           </label>
           <input
@@ -89,9 +159,11 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
             id="email"
             value={data.email}
             onChange={(e) => onUpdate('email', e.target.value)}
+            onBlur={() => setTouched(t => ({ ...t, email: true }))}
             placeholder="Ej: msaavedra@ucn.cl"
-            className={inputClass}
+            className={inputClass + (errors.email && touched.email ? ' border-red-500' : '')}
           />
+          {errors.email && touched.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
         </div>
 
         <div>
@@ -111,40 +183,39 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
           />
         </div>
 
-        <div className="border-t border-gray-200 pt-6">
-          <h3 className="text-sm font-medium text-gray-700 mb-4">Enlace Adicional (opcional)</h3>
-          
-          <div className="space-y-4">
+  {/* Se eliminó la sección de Enlace Adicional (opcional) */}
+
+        {/* Redes sociales */}
+        <div className="border-t border-gray-200 pt-6 mt-6">
+          <h3 className="text-sm font-medium text-gray-700 mb-4">Introduce tus enlaces académicos y profesionales</h3>
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="additionalLinkText" className={labelClass}>
-                <div className="flex items-center gap-2">
-                  <Link className="w-4 h-4 text-gray-600" />
-                  Texto del Enlace
-                </div>
-              </label>
+              <label className={labelClass}>Google Scholar</label>
               <input
-                type="text"
-                id="additionalLinkText"
-                value={data.additionalLinkText || ''}
-                onChange={(e) => onUpdate('additionalLinkText', e.target.value)}
-                placeholder="Ej: ORCID, Sitio Web Personal, ResearchGate"
+                type="url"
+                value={data.social?.googleScholar || ''}
+                onChange={e => onUpdate('social', { ...data.social, googleScholar: e.target.value })}
+                placeholder="https://scholar.google.com/citations?user=..."
                 className={inputClass}
               />
             </div>
-
             <div>
-              <label htmlFor="additionalLink" className={labelClass}>
-                <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-gray-600" />
-                  URL del Enlace
-                </div>
-              </label>
+              <label className={labelClass}>LinkedIn</label>
               <input
                 type="url"
-                id="additionalLink"
+                value={data.social?.linkedin || ''}
+                onChange={e => onUpdate('social', { ...data.social, linkedin: e.target.value })}
+                placeholder="https://www.linkedin.com"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>ORCID / Sitio Web Personal</label>
+              <input
+                type="url"
                 value={data.additionalLink || ''}
-                onChange={(e) => onUpdate('additionalLink', e.target.value)}
-                placeholder="Ej: https://orcid.org/0000-0000-0000-0000"
+                onChange={e => onUpdate('additionalLink', e.target.value)}
+                placeholder="https://orcid.org/0000-0000-0000-0000 o tu web personal"
                 className={inputClass}
               />
             </div>

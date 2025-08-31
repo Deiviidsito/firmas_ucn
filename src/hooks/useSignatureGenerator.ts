@@ -7,6 +7,14 @@ export interface SignatureData {
   positions: string[];
   department: string;
   campus: string;
+  additionalLink?: string;
+  additionalLinkText?: string;
+  social?: {
+    linkedin?: string;
+    facebook?: string;
+    twitter?: string;
+    instagram?: string;
+  };
 }
 
 export const useSignatureGenerator = () => {
@@ -71,6 +79,26 @@ export const useSignatureGenerator = () => {
       .map(pos => `<div style="font-size: 16px; color: #1f2937; line-height: 1.25; margin-bottom: 4px;">${pos}</div>`)
       .join('');
 
+    const socialIcons: Record<string, string> = {
+      linkedin: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg",
+      twitter: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg",
+      facebook: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg",
+      instagram: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg",
+    };
+
+    const socialHTML = signatureData.social
+      ? `<div style='margin-top:16px;display:flex;gap:12px;'>${Object.entries(signatureData.social)
+          .map(([key, url]) =>
+            url
+              ? `<a href='${url}' target='_blank' rel='noopener noreferrer' style='display:inline-block;'>
+                  <img src='${socialIcons[key]}' alt='${key}' style='width:32px;height:32px;border-radius:50%;background:#818cf8;padding:4px;display:inline-block;' />
+                </a>`
+              : ''
+          )
+          .join('')}
+        </div>`
+      : '';
+
     return `
     <table cellpadding="0" cellspacing="0" style="border-collapse: collapse; min-width: 650px;">
       <tr style="vertical-align: top;">
@@ -86,8 +114,10 @@ export const useSignatureGenerator = () => {
             <div style="font-size: 14px; color: #6b7280; line-height: 1.25; margin-bottom: 4px; white-space: nowrap;">Departamento de Ingeniería de Sistemas y Computación</div>
             <div style="font-size: 14px; color: #6b7280; line-height: 1.25; margin-bottom: 4px;">Universidad Católica del Norte</div>
             <div style="font-size: 14px; color: #6b7280; line-height: 1.25; margin-bottom: 4px;">Av. Angamos 0610, Antofagasta</div>
-            ${signatureData.phone ? `<div style="font-size: 14px; color: #1f2937; margin-bottom: 4px;">${signatureData.phone}</div>` : ''}
-            ${signatureData.email ? `<div style="font-size: 14px; margin-bottom: 4px;"><a href="mailto:${signatureData.email}" style="color: #1d4ed8; text-decoration: underline;">${signatureData.email}</a></div>` : ''}
+            ${signatureData.phone ? `<div style=\"font-size: 14px; color: #1f2937; margin-bottom: 4px;\">${signatureData.phone}</div>` : ''}
+            ${signatureData.email ? `<div style=\"font-size: 14px; margin-bottom: 4px;\"><a href=\"mailto:${signatureData.email}\" style=\"color: #1d4ed8; text-decoration: underline;\">${signatureData.email}</a></div>` : ''}
+            ${signatureData.additionalLink ? `<div style=\"font-size: 14px; margin-bottom: 4px;\"><a href=\"${signatureData.additionalLink}\" style=\"color: #1d4ed8; text-decoration: underline;\">${signatureData.additionalLinkText || signatureData.additionalLink}</a></div>` : ''}
+            ${socialHTML}
             <hr style="margin-top: 16px; border: none; border-top: 1px solid #1e3a8a;">
           </div>
         </td>

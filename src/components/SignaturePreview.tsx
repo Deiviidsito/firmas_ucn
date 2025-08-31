@@ -7,6 +7,13 @@ interface SignatureData {
   phone?: string;
   additionalLink?: string;
   additionalLinkText?: string;
+  social?: {
+    linkedin?: string;
+    facebook?: string;
+    twitter?: string;
+    instagram?: string;
+    googleScholar?: string;
+  };
 }
 
 interface SignaturePreviewProps {
@@ -67,11 +74,63 @@ const SignaturePreview: React.FC<SignaturePreviewProps> = ({ data }) => {
               <a href={data.additionalLink} className="text-blue-700 underline">{data.additionalLinkText || data.additionalLink}</a>
             </div>
           )}
+          {/* Íconos de redes sociales */}
+          {(data.social?.googleScholar || data.social?.linkedin || data.additionalLink) && (
+            <div className="flex gap-2 mt-3">
+              {data.social?.googleScholar && (
+                <a
+                  href={data.social.googleScholar}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                  style={{ lineHeight: 0 }}
+                >
+                  <img
+                    src="https://scholar.google.com/favicon.ico"
+                    alt="Google Scholar"
+                    style={{ width: 18, height: 18, display: 'inline-block', borderRadius: 3, background: '#fff', boxShadow: '0 0 2px #ccc' }}
+                  />
+                </a>
+              )}
+              {data.social?.linkedin && (
+                <a
+                  href={data.social.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                  style={{ lineHeight: 0 }}
+                >
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/32px-LinkedIn_logo_initials.png"
+                    alt="LinkedIn"
+                    style={{ width: 18, height: 18, display: 'inline-block', borderRadius: 3, background: '#fff', boxShadow: '0 0 2px #ccc' }}
+                  />
+                </a>
+              )}
+              {data.additionalLink && (
+                <a
+                  href={data.additionalLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                  style={{ lineHeight: 0 }}
+                >
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/0/06/ORCID_iD.svg"
+                    alt="ORCID/Sitio Web"
+                    style={{ width: 18, height: 18, display: 'inline-block', borderRadius: 3, background: '#fff', boxShadow: '0 0 2px #ccc' }}
+                  />
+                </a>
+              )}
+            </div>
+          )}
           <hr className="mt-4 border-blue-900" />
         </div>
       </div>
     </div>
   );
+
+  // Eliminada función getSocialIcon, solo se usa LinkedIn
 };
 
 export default SignaturePreview;

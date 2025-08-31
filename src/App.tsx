@@ -12,6 +12,7 @@ function App() {
     updateField,
     updatePosition,
     addPosition,
+    removePosition,
     copyToClipboard,
     resetForm
   } = useSignatureGenerator();
@@ -33,6 +34,7 @@ function App() {
               onUpdate={updateField}
               onUpdatePosition={updatePosition}
               onAddPosition={addPosition}
+              onRemovePosition={removePosition}
               onReset={resetForm}
             />
           </div>
