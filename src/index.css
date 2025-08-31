@@ -1,4 +1,21 @@
+/* stylelint-disable at-rule-no-unknown */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
+
+/* CSS Variables and Dark Mode */
+:root {
+  --color-primary: #5a7591;
+  --scrollbar-track: #f3f4f6;
+  --scrollbar-thumb: #d1d5db;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --scrollbar-track: #2d2d2d;
+    --scrollbar-thumb: #4a4a4a;
+  }
+}
 
 @tailwind base;
 @tailwind components;
@@ -7,6 +24,13 @@
 @layer base {
   body {
     font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--bg-color, #ffffff);
+    color: var(--text-color, #000000);
+  }
+  
+  /* Global link transition */
+  a {
+    transition: color 0.2s ease-in-out;
   }
 }
 
@@ -27,25 +51,31 @@
   }
 }
 
-/* Custom scrollbar */
+/* Enhanced scrollbar styling for Webkit and Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100;
+  background-color: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full;
+  background-color: var(--scrollbar-thumb);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400;
+  background-color: #b0b0b0;
 }
 
 /* Signature preview specific styles */
 .signature-preview a:hover {
-  color: #5a7591 !important;
-  transition: color 0.2s ease-in-out;
+  color: var(--color-primary) !important;
+  /* Transition handled globally for links */
 }

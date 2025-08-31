@@ -13,6 +13,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ onCopy, success, disabled = fal
       <button
         onClick={onCopy}
         disabled={disabled}
+        aria-label={success ? 'Firma copiada' : 'Copiar firma'}
         className={`
           flex items-center gap-3 px-8 py-4 rounded-lg font-semibold text-white 
           transition-all duration-300 transform hover:scale-105 shadow-lg
@@ -24,12 +25,12 @@ const CopyButton: React.FC<CopyButtonProps> = ({ onCopy, success, disabled = fal
       >
         {success ? (
           <>
-            <Check className="w-5 h-5" />
+            <Check className="w-5 h-5" aria-hidden="true" />
             Copiado
           </>
         ) : (
           <>
-            <Copy className="w-5 h-5" />
+            <Copy className="w-5 h-5" aria-hidden="true" />
             Copiar Firma
           </>
         )}
@@ -37,7 +38,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ onCopy, success, disabled = fal
 
       {success && (
         <div className="flex items-center gap-2 text-green-600 font-medium animate-fade-in">
-          <Check className="w-4 h-4" />
+          <Check className="w-4 h-4" aria-hidden="true" />
           <span>✅ Firma copiada con éxito</span>
         </div>
       )}
