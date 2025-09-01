@@ -27,7 +27,7 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
   const inputClass = "w-full px-3 py-2 border-b border-gray-200 focus:border-blue-500 focus:outline-none transition-all duration-200 text-gray-800 bg-transparent";
   const labelClass = "block text-sm font-medium text-gray-600 mb-1";
 
-  type ErrorMessage = '' | 'Debe tener al menos 3 caracteres.' | 'No puede superar los 100 caracteres.' | 'Campo obligatorio.' | 'Correo inválido.';
+  type ErrorMessage = string;
   const [errors, setErrors] = useState<{ fullName: ErrorMessage; positions: ErrorMessage[]; email: ErrorMessage }>({
     fullName: '',
     positions: [],
@@ -49,28 +49,43 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdateP
     };
 
     // Nombre completo
-    if (!data.fullName || data.fullName.length < 3) {
+    const nameRegex = /^[A-ZÁÉÍÓÚÑa-záéíóúñ][A-ZÁÉÍÓÚÑa-záéíóúñ\s'-]*$/;
+    if (!data.fullName) {
+      newErrors.fullName = 'Campo obligatorio.';
+      valid = false;
+    } else if (data.fullName.length < 3) {
       newErrors.fullName = 'Debe tener al menos 3 caracteres.';
       valid = false;
     } else if (data.fullName.length > 100) {
       newErrors.fullName = 'No puede superar los 100 caracteres.';
       valid = false;
+    } else if (!nameRegex.test(data.fullName)) {
+      newErrors.fullName = 'Solo se permiten letras, espacios, guiones y apóstrofes.';
+      valid = false;
     }
 
     // Cargo(s)
+    const positionRegex = /^[A-ZÁÉÍÓÚÑa-záéíóúñ0-9][A-ZÁÉÍÓÚÑa-záéíóúñ0-9\s\-.()]+$/;
     newErrors.positions = data.positions.map(pos => {
-      if (!pos || pos.length < 3) return 'Debe tener al menos 3 caracteres.';
-      if (pos.length > 100) return 'No puede superar los 100 caracteres.';
+      if (!pos) return 'Campo obligatorio.';
+      if (pos.length < 2) return 'Debe tener al menos 2 caracteres.';
+      if (pos.length > 50) return 'No puede superar los 50 caracteres.';
+      if (!positionRegex.test(pos)) return 'Solo se permiten letras, números, espacios, guiones y puntos.';
+      if (/^[a-z]/.test(pos)) return 'Debe comenzar con mayúscula.';
       return '';
     }) as ErrorMessage[];
     if (newErrors.positions.some(e => e)) valid = false;
 
     // Email
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!data.email) {
       newErrors.email = 'Campo obligatorio.';
       valid = false;
-    } else if (!/^\S+@\S+\.\S+$/.test(data.email)) {
-      newErrors.email = 'Correo inválido.';
+    } else if (data.email.length > 254) {
+      newErrors.email = 'El correo no puede superar los 254 caracteres.';
+      valid = false;
+    } else if (!emailRegex.test(data.email)) {
+      newErrors.email = 'Formato de correo inválido.';
       valid = false;
     }
 

@@ -129,8 +129,8 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
   }, [data]);
 
   const signatureContent = (
-    <div className="flex items-stretch gap-6" style={{ minWidth: '650px' }} ref={signatureRef}>
-      <div className="flex h-full">
+    <div className="flex items-stretch gap-6" style={{ minWidth: '650px', maxWidth: '800px' }} ref={signatureRef}>
+      <div className="flex h-full shrink-0">
         <img
           src="https://i.imgur.com/sC4luNO.png"
           alt="Logo Universidad Católica del Norte"
@@ -143,12 +143,14 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
           loading="lazy"
         />
       </div>
-      <div className="flex-1 min-w-0" ref={contentRef} style={{ minWidth: '500px' }}>
+      <div className="flex-1 min-w-0 overflow-hidden" ref={contentRef} style={{ minWidth: '500px', maxWidth: '600px' }}>
         {data.fullName && (
-          <h1 className="font-bold text-lg mb-1">{data.fullName}</h1>
+          <h1 className="font-bold text-lg mb-1 truncate max-w-[400px]" title={data.fullName}>
+            {data.fullName}
+          </h1>
         )}
         {data.positions.filter(Boolean).map((position, index) => (
-          <p key={index} className="text-base text-gray-800 leading-tight mb-1">
+          <p key={index} className="text-base text-gray-800 leading-tight mb-1 truncate max-w-[400px]" title={position}>
             {position}
           </p>
         ))}
@@ -250,7 +252,11 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
         {/* Mensaje de previsualización */}
         <div className="px-8 pt-6 pb-2">
           <p className="text-gray-700 text-sm mb-4" role="status">
-            Esta es la previsualización de cómo está quedando tu firma.
+            Estimad@s,<br />
+            <br />
+            Esta es la previsualización de cómo está quedando tu firma. <br />
+            <br />
+            Saludos cordiales.
           </p>
         </div>
         
