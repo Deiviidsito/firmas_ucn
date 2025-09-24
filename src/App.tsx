@@ -20,7 +20,7 @@ function App() {
   const isFormValid = signatureData.fullName && hasPosition && signatureData.email;
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 flex flex-col" style={{ colorScheme: 'light' }}>
       <Header />
       <main className="flex-1 flex flex-col lg:flex-row">
         {/* Form Section */}
