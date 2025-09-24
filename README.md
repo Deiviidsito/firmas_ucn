@@ -2,7 +2,7 @@
 
 > Sistema web para generar firmas de correo electrónico personalizadas para la Universidad Católica del Norte
 
-![UCN Logo](https://www.ucn.cl/wp-content/themes/ucn2022/assets/images/logo-ucn.svg)
+![DISC Logo](https://disc.cl/user/themes/quark/images/logo/disc.svg)
 
 ## 🚀 Descripción
 
@@ -192,22 +192,10 @@ npm run build
 Usuario Input → useSignatureGenerator → Validación → HTML Generation → Preview + Copy
 ```
 
-## 📞 Soporte
-
-Para soporte técnico, contactar al equipo DISC de UCN:
-- 📧 Email: soporte@ucn.cl
-- 📱 Teléfono: +56 (55) 2355-555
-- 🌐 Portal: [soporte.ucn.cl](https://soporte.ucn.cl)
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
-
 ## 👥 Equipo de Desarrollo
 
 - **Desarrollo**: [Deiviidsito](https://github.com/Deiviidsito)
-- **Diseño**: Equipo UCN
-- **Soporte**: DISC UCN
+- **Diseño**: Comunicación DISC
 
 ---
 
