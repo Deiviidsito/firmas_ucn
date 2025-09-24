@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, User, Briefcase, GraduationCap, Linkedin, Globe } from 'lucide-react';
+import { Mail, Phone, User, Briefcase, Link, Globe, GraduationCap } from 'lucide-react';
 
 interface SignatureData {
   fullName: string;
@@ -16,230 +16,255 @@ interface SignatureData {
 
 interface SignatureFormProps {
   data: SignatureData;
-  onUpdate: (field: keyof SignatureData, value: string) => void;
+  onUpdate: (field: keyof SignatureData, value: string | any) => void;
   onUpdatePosition: (index: number, value: string) => void;
   onAddPosition: () => void;
   onRemovePosition: (index: number) => void;
   onReset: () => void;
 }
 
-const SignatureForm: React.FC<SignatureFormProps> = ({ data, onUpdate, onUpdatePosition, onAddPosition, onRemovePosition, onReset }) => {
-  const inputClass = "w-full px-3 py-2 border-b border-gray-200 focus:border-blue-500 focus:outline-none transition-all duration-200 text-gray-800 bg-transparent";
-  const labelClass = "block text-sm font-medium text-gray-600 mb-1";
-
-  type ErrorMessage = string;
-  const [errors, setErrors] = useState<{ fullName: ErrorMessage; positions: ErrorMessage[]; email: ErrorMessage }>({
-    fullName: '',
-    positions: [],
-    email: '',
-  });
-  const [touched, setTouched] = useState({
-    fullName: false,
-    positions: [] as boolean[],
-    email: false,
-  });
-
-  // Validaciones
-  const validate = () => {
-    let valid = true;
-    const newErrors: { fullName: ErrorMessage; positions: ErrorMessage[]; email: ErrorMessage } = {
-      fullName: '',
-      positions: [],
-      email: '',
-    };
-
-    // Nombre completo
-    const nameRegex = /^[A-ZÁÉÍÓÚÑa-záéíóúñ][A-ZÁÉÍÓÚÑa-záéíóúñ\s'-]*$/;
-    if (!data.fullName) {
-      newErrors.fullName = 'Campo obligatorio.';
-      valid = false;
-    } else if (data.fullName.length < 3) {
-      newErrors.fullName = 'Debe tener al menos 3 caracteres.';
-      valid = false;
-    } else if (data.fullName.length > 100) {
-      newErrors.fullName = 'No puede superar los 100 caracteres.';
-      valid = false;
-    } else if (!nameRegex.test(data.fullName)) {
-      newErrors.fullName = 'Solo se permiten letras, espacios, guiones y apóstrofes.';
-      valid = false;
-    }
-
-    // Cargo(s)
-    const positionRegex = /^[A-ZÁÉÍÓÚÑa-záéíóúñ0-9][A-ZÁÉÍÓÚÑa-záéíóúñ0-9\s\-.()]+$/;
-    newErrors.positions = data.positions.map(pos => {
-      if (!pos) return 'Campo obligatorio.';
-      if (pos.length < 2) return 'Debe tener al menos 2 caracteres.';
-      if (pos.length > 50) return 'No puede superar los 50 caracteres.';
-      if (!positionRegex.test(pos)) return 'Solo se permiten letras, números, espacios, guiones y puntos.';
-      if (/^[a-z]/.test(pos)) return 'Debe comenzar con mayúscula.';
-      return '';
-    }) as ErrorMessage[];
-    if (newErrors.positions.some(e => e)) valid = false;
-
-    // Email
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!data.email) {
-      newErrors.email = 'Campo obligatorio.';
-      valid = false;
-    } else if (data.email.length > 254) {
-      newErrors.email = 'El correo no puede superar los 254 caracteres.';
-      valid = false;
-    } else if (!emailRegex.test(data.email)) {
-      newErrors.email = 'Formato de correo inválido.';
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  // Validar en cada cambio
-  React.useEffect(() => {
-    validate();
-    // eslint-disable-next-line
-  }, [data]);
+const SignatureForm: React.FC<SignatureFormProps> = ({ 
+  data, 
+  onUpdate, 
+  onUpdatePosition, 
+  onAddPosition, 
+  onRemovePosition, 
+  onReset 
+}) => {
+  const [activeTab, setActiveTab] = useState<'personal' | 'academic'>('personal');
+  
+  const inputClass = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-800 bg-white";
+  const labelClass = "block text-sm font-medium text-gray-700 mb-2";
 
   return (
-    <div className="bg-white">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-medium text-gray-800">Datos de la Firma</h2>
-        <button
-          onClick={onReset}
-          className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 border-b border-transparent hover:border-gray-300 transition-all duration-200"
-        >
-          Limpiar
-        </button>
+    <div className="h-full bg-white">
+      {/* Mobile/Tablet Navigation */}
+      <div className="lg:hidden border-b border-gray-200 bg-gray-50">
+        <div className="flex">
+          <button
+            onClick={() => setActiveTab('personal')}
+            className={`flex-1 flex items-center justify-center gap-2 py-4 px-4 text-sm font-medium transition-colors ${
+              activeTab === 'personal' 
+                ? 'text-blue-600 border-b-2 border-blue-600 bg-white' 
+                : 'text-gray-600 hover:text-gray-800 bg-gray-50'
+            }`}
+          >
+            <User className="w-4 h-4" />
+            <span className="hidden sm:inline">Datos Personales</span>
+            <span className="sm:hidden">Datos</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('academic')}
+            className={`flex-1 flex items-center justify-center gap-2 py-4 px-4 text-sm font-medium transition-colors ${
+              activeTab === 'academic' 
+                ? 'text-green-600 border-b-2 border-green-600 bg-white' 
+                : 'text-gray-600 hover:text-gray-800 bg-gray-50'
+            }`}
+          >
+            <GraduationCap className="w-4 h-4" />
+            <span className="hidden sm:inline">Enlaces Académicos</span>
+            <span className="sm:hidden">Enlaces</span>
+          </button>
+        </div>
       </div>
 
-      <div className="space-y-6">
-        <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4 text-gray-600" />
-              Nombre Completo <span className="text-red-600">*</span>
-            </div>
-          </label>
-          <input
-            type="text"
-            id="fullName"
-            value={data.fullName}
-            onChange={(e) => onUpdate('fullName', e.target.value)}
-            onBlur={() => setTouched(t => ({ ...t, fullName: true }))}
-            placeholder="Ej: Matías Saavedra"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-800"
-          />
-          {errors.fullName && touched.fullName && <p className="text-xs text-red-600 mt-1">{errors.fullName}</p>}
+      <div className="flex h-full">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:flex w-16 bg-gray-50 border-r border-gray-200 flex-col items-center py-6 space-y-3">
+          <button
+            onClick={() => setActiveTab('personal')}
+            className={`w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-200 ${
+              activeTab === 'personal' 
+                ? 'bg-blue-500 text-white shadow-md' 
+                : 'bg-white text-gray-500 hover:text-blue-600 hover:bg-blue-50 border border-gray-200'
+            }`}
+            title="Datos Personales"
+          >
+            <User className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={() => setActiveTab('academic')}
+            className={`w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-200 ${
+              activeTab === 'academic' 
+                ? 'bg-green-500 text-white shadow-md' 
+                : 'bg-white text-gray-500 hover:text-green-600 hover:bg-green-50 border border-gray-200'
+            }`}
+            title="Enlaces Académicos"
+          >
+            <GraduationCap className="w-5 h-5" />
+          </button>
         </div>
 
-        <div>
-          <label className={labelClass}>
-            <div className="flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-gray-600" />
-              Cargo(s) / Título(s) <span className="text-red-600">*</span>
+        {/* Content Area */}
+        <div className="flex-1 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800">
+                {activeTab === 'personal' ? 'Datos Personales' : 'Enlaces Académicos'}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {activeTab === 'personal' 
+                  ? 'Información básica y de contacto' 
+                  : 'Perfiles y redes profesionales (opcional)'}
+              </p>
             </div>
-          </label>
-          <div className="space-y-2">
-            {data.positions.map((pos, idx) => (
-              <div key={idx} className="flex flex-col items-start gap-0">
-                <div className="w-full flex gap-2 items-center">
-                  <input
-                    type="text"
-                    value={pos}
-                    onChange={(e) => onUpdatePosition(idx, e.target.value)}
-                    onBlur={() => setTouched(t => ({
-                      ...t,
-                      positions: Object.assign([], t.positions, { [idx]: true })
-                    }))}
-                    placeholder={`Ej: Cargo ${idx + 1}`}
-                    className={inputClass + (errors.positions[idx] && touched.positions[idx] ? ' border-red-500' : '')}
-                  />
-                  {data.positions.length > 1 && idx > 0 && (
-                    <button type="button" onClick={() => onRemovePosition(idx)} className="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition">–</button>
-                  )}
-                  {idx === data.positions.length - 1 && data.positions.length < 3 && (
-                    <button type="button" onClick={onAddPosition} className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition">+</button>
-                  )}
-                </div>
-                {errors.positions[idx] && touched.positions[idx] && <p className="text-xs text-red-600 mt-1 text-left w-full">{errors.positions[idx]}</p>}
+            <button
+              onClick={onReset}
+              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200"
+            >
+              Limpiar
+            </button>
+          </div>
+
+          {/* PERSONAL DATA TAB */}
+          {activeTab === 'personal' && (
+            <div className="space-y-5">
+              <div>
+                <label htmlFor="fullName" className={labelClass}>
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-gray-600" />
+                    Nombre Completo <span className="text-red-500">*</span>
+                  </div>
+                </label>
+                <input
+                  type="text"
+                  id="fullName"
+                  value={data.fullName}
+                  onChange={(e) => onUpdate('fullName', e.target.value)}
+                  placeholder="Ej: Matías Saavedra"
+                  className={inputClass}
+                />
               </div>
-            ))}
-          </div>
-        </div>
 
-        <div>
-          <label htmlFor="email" className={labelClass}>
-            <div className="flex items-center gap-2">
-              <Mail className="w-4 h-4 text-gray-600" />
-              Correo Electrónico <span className="text-red-600">*</span>
-            </div>
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={data.email}
-            onChange={(e) => onUpdate('email', e.target.value)}
-            onBlur={() => setTouched(t => ({ ...t, email: true }))}
-            placeholder="Ej: msaavedra@ucn.cl"
-            className={inputClass + (errors.email && touched.email ? ' border-red-500' : '')}
-          />
-          {errors.email && touched.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
-        </div>
+              <div>
+                <label className={labelClass}>
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="w-4 h-4 text-gray-600" />
+                    Cargo(s) / Título(s) <span className="text-red-500">*</span>
+                  </div>
+                </label>
+                <div className="space-y-3">
+                  {data.positions.map((pos, idx) => (
+                    <div key={idx} className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        value={pos}
+                        onChange={(e) => onUpdatePosition(idx, e.target.value)}
+                        placeholder={`Cargo ${idx + 1}`}
+                        className={`${inputClass} flex-1`}
+                      />
+                      {data.positions.length > 1 && idx > 0 && (
+                        <button 
+                          type="button" 
+                          onClick={() => onRemovePosition(idx)} 
+                          className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition flex items-center justify-center font-bold shrink-0"
+                        >
+                          –
+                        </button>
+                      )}
+                      {idx === data.positions.length - 1 && data.positions.length < 3 && (
+                        <button 
+                          type="button" 
+                          onClick={onAddPosition} 
+                          className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition flex items-center justify-center font-bold shrink-0"
+                        >
+                          +
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-        <div>
-          <label htmlFor="phone" className={labelClass}>
-            <div className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-gray-600" />
-              Teléfono (opcional)
-            </div>
-          </label>
-          <input
-            type="tel"
-            id="phone"
-            value={data.phone || ''}
-            onChange={(e) => onUpdate('phone', e.target.value)}
-            placeholder="Ej: +56 55 355 1234"
-            className={inputClass}
-          />
-        </div>
+              <div>
+                <label htmlFor="email" className={labelClass}>
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-gray-600" />
+                    Correo Electrónico <span className="text-red-500">*</span>
+                  </div>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={data.email}
+                  onChange={(e) => onUpdate('email', e.target.value)}
+                  placeholder="Ej: msaavedra@ucn.cl"
+                  className={inputClass}
+                />
+              </div>
 
-        {/* Redes sociales */}
-        <div className="pt-8 mt-8 border-t border-gray-100">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">Enlaces Académicos</h3>
-          <div className="flex flex-col space-y-6">
-            <div className="flex items-center gap-3">
-              <GraduationCap className="w-4 h-4 text-gray-500" aria-hidden="true" />
-              <span className="text-sm text-gray-600 w-24">Google Scholar</span>
-              <input
-                type="url"
-                value={data.social?.googleScholar || ''}
-                onChange={e => onUpdate('social', { ...data.social, googleScholar: e.target.value } as any)}
-                placeholder="https://scholar.google.com/..."
-                className={`flex-1 ${inputClass}`}
-              />
+              <div>
+                <label htmlFor="phone" className={labelClass}>
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-gray-600" />
+                    Teléfono (opcional)
+                  </div>
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  value={data.phone || ''}
+                  onChange={(e) => onUpdate('phone', e.target.value)}
+                  placeholder="Ej: +56 55 355 1234"
+                  className={inputClass}
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Linkedin className="w-4 h-4 text-gray-500" aria-hidden="true" />
-              <span className="text-sm text-gray-600 w-24">LinkedIn</span>
-              <input
-                type="url"
-                value={data.social?.linkedin || ''}
-                onChange={e => onUpdate('social', { ...data.social, linkedin: e.target.value } as any)}
-                placeholder="https://www.linkedin.com/..."
-                className={`flex-1 ${inputClass}`}
-              />
+          )}
+
+          {/* ACADEMIC LINKS TAB */}
+          {activeTab === 'academic' && (
+            <div className="space-y-5">
+              <div>
+                <label className={labelClass}>
+                  <div className="flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-gray-600" />
+                    Google Scholar
+                  </div>
+                </label>
+                <input
+                  type="url"
+                  value={data.social?.googleScholar || ''}
+                  onChange={(e) => onUpdate('social', { ...data.social, googleScholar: e.target.value })}
+                  placeholder="https://scholar.google.com/citations?user=..."
+                  className={inputClass}
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>
+                  <div className="flex items-center gap-2">
+                    <Link className="w-4 h-4 text-gray-600" />
+                    LinkedIn
+                  </div>
+                </label>
+                <input
+                  type="url"
+                  value={data.social?.linkedin || ''}
+                  onChange={(e) => onUpdate('social', { ...data.social, linkedin: e.target.value })}
+                  placeholder="https://www.linkedin.com/in/usuario"
+                  className={inputClass}
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-gray-600" />
+                    ORCID / Sitio Web Personal
+                  </div>
+                </label>
+                <input
+                  type="url"
+                  value={data.additionalLink || ''}
+                  onChange={(e) => onUpdate('additionalLink', e.target.value)}
+                  placeholder="https://orcid.org/0000-0000-0000-0000"
+                  className={inputClass}
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Globe className="w-4 h-4 text-gray-500" aria-hidden="true" />
-              <span className="text-sm text-gray-600 w-24">ORCID/Sitio</span>
-              <input
-                type="url"
-                value={data.additionalLink || ''}
-                onChange={e => onUpdate('additionalLink', e.target.value)}
-                placeholder="https://orcid.org/..."
-                className={`flex-1 ${inputClass}`}
-              />
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

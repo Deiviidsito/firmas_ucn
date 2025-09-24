@@ -54,22 +54,6 @@ const SocialIcon: React.FC<{
   </a>
 );
 
-const ToolbarButton: React.FC<{
-  onClick: () => void;
-  disabled: boolean;
-  success: boolean;
-}> = ({ onClick, disabled, success }) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className="flex items-center gap-1 bg-blue-600 text-white text-sm font-medium px-3 py-1 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none"
-    aria-label={success ? 'Firma copiada' : 'Copiar firma'}
-  >
-    <Copy className="w-4 h-4" aria-hidden="true" />
-    <span>{success ? '¡Copiado!' : 'Copiar firma'}</span>
-  </button>
-);
-
 const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
   data,
   onCopy,
@@ -129,45 +113,48 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
   }, [data]);
 
   const signatureContent = (
-    <div className="flex items-stretch gap-6" style={{ minWidth: '650px', maxWidth: '800px' }} ref={signatureRef}>
-      <div className="flex h-full shrink-0">
+    <div className="flex flex-col sm:flex-row items-start sm:items-stretch gap-4 sm:gap-6 min-w-0" ref={signatureRef}>
+      <div className="flex justify-center sm:justify-start shrink-0 w-full sm:w-auto">
         <img
           src="https://i.imgur.com/sC4luNO.png"
           alt="Logo Universidad Católica del Norte"
+          className="w-20 h-20 sm:w-24 sm:h-24 object-contain"
           style={{
             width: logoSize,
             height: logoSize,
-            objectFit: 'contain',
-            display: 'block'
+            maxWidth: '120px',
+            maxHeight: '120px'
           }}
           loading="lazy"
         />
       </div>
-      <div className="flex-1 min-w-0 overflow-hidden" ref={contentRef} style={{ minWidth: '500px', maxWidth: '600px' }}>
+      <div className="flex-1 min-w-0 text-center sm:text-left" ref={contentRef}>
         {data.fullName && (
-          <h1 className="font-bold text-lg mb-1 truncate max-w-[400px]" title={data.fullName}>
+          <h1 className="font-bold text-base sm:text-lg mb-1 break-words" title={data.fullName}>
             {data.fullName}
           </h1>
         )}
         {data.positions.filter(Boolean).map((position, index) => (
-          <p key={index} className="text-base text-gray-800 leading-tight mb-1 truncate max-w-[400px]" title={position}>
+          <p key={index} className="text-sm sm:text-base text-gray-800 leading-tight mb-1 break-words" title={position}>
             {position}
           </p>
         ))}
-        <p className="text-sm text-gray-500 leading-tight mb-1 whitespace-nowrap">
-          Departamento de Ingeniería de Sistemas y Computación
+        <p className="text-xs sm:text-sm text-gray-500 leading-tight mb-1">
+          <span className="block sm:inline">Departamento de Ingeniería de Sistemas</span>
+          <span className="hidden sm:inline"> y </span>
+          <span className="block sm:inline">Computación</span>
         </p>
-        <p className="text-sm text-gray-500 leading-tight mb-1">
+        <p className="text-xs sm:text-sm text-gray-500 leading-tight mb-1">
           Universidad Católica del Norte
         </p>
-        <p className="text-sm text-gray-500 leading-tight mb-1">
+        <p className="text-xs sm:text-sm text-gray-500 leading-tight mb-1">
           Av. Angamos 0610, Antofagasta
         </p>
         {data.phone && (
-          <p className="text-sm text-gray-800 mb-1">{data.phone}</p>
+          <p className="text-xs sm:text-sm text-gray-800 mb-1 break-words">{data.phone}</p>
         )}
         {data.email && (
-          <p className="text-sm mb-1">
+          <p className="text-xs sm:text-sm mb-1 break-words">
             <a
               href={`mailto:${data.email}`}
               className="text-blue-700 hover:text-blue-800 underline"
@@ -179,7 +166,7 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
         
         {/* Íconos sociales */}
         {(data.social?.googleScholar || data.social?.linkedin || data.social?.orcid) && (
-          <div className="flex gap-2 mt-3" role="list" aria-label="Redes sociales">
+          <div className="flex gap-2 mt-3 justify-center sm:justify-start" role="list" aria-label="Redes sociales">
             {data.social?.googleScholar && (
               <SocialIcon
                 url={data.social.googleScholar}
@@ -210,39 +197,44 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
 
   return (
     <div className="w-full">
-      <div className="bg-white shadow-lg rounded-xl w-full max-w-4xl mx-auto border border-gray-200">
+      <div className="bg-white shadow-lg rounded-xl w-full max-w-6xl mx-auto border border-gray-200">
         {/* Toolbar */}
-        <div className="bg-blue-50 rounded-t-xl px-6 py-2 border-b border-gray-200 flex items-center justify-between">
-          <span className="text-sm font-medium text-blue-900" role="status">
+        <div className="bg-blue-50 rounded-t-xl px-4 sm:px-6 py-2 border-b border-gray-200 flex items-center justify-between">
+          <span className="text-xs sm:text-sm font-medium text-blue-900" role="status">
             Nuevo mensaje
           </span>
-          <ToolbarButton
+          <button
             onClick={handleCopy}
             disabled={disabled}
-            success={success}
-          />
+            className="flex items-center gap-1 sm:gap-2 bg-blue-600 text-white text-xs sm:text-sm font-medium px-3 py-1.5 sm:py-2 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            aria-label={success ? 'Firma copiada' : 'Copiar firma'}
+          >
+            <Copy className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
+            <span className="hidden sm:inline">{success ? '¡Copiado!' : 'Copiar firma'}</span>
+            <span className="sm:hidden">📋</span>
+          </button>
         </div>
         
         {/* Campos Para y Asunto */}
-        <div className="px-8 pt-6 pb-2">
+        <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-2">
           <div className="flex flex-col gap-3">
             <div className="flex items-center border-b border-gray-100 pb-3">
-              <label className="w-16 text-gray-500 text-xs">Para</label>
+              <label className="w-12 sm:w-16 text-gray-500 text-xs">Para</label>
               <input
                 type="text"
                 disabled
                 value=""
-                className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
+                className="flex-1 bg-transparent text-xs sm:text-sm text-gray-700 outline-none"
                 aria-label="Campo Para (deshabilitado)"
               />
             </div>
             <div className="flex items-center border-b border-gray-100 pb-3">
-              <label className="w-16 text-gray-500 text-xs">Asunto</label>
+              <label className="w-12 sm:w-16 text-gray-500 text-xs">Asunto</label>
               <input
                 type="text"
                 disabled
                 value=""
-                className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
+                className="flex-1 bg-transparent text-xs sm:text-sm text-gray-700 outline-none"
                 aria-label="Campo Asunto (deshabilitado)"
               />
             </div>
@@ -250,8 +242,8 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
         </div>
         
         {/* Mensaje de previsualización */}
-        <div className="px-8 pt-6 pb-2">
-          <p className="text-gray-700 text-sm mb-4" role="status">
+        <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-2">
+          <p className="text-gray-700 text-xs sm:text-sm mb-4" role="status">
             Estimad@s,<br />
             <br />
             Esta es la previsualización de cómo está quedando tu firma. <br />
@@ -261,9 +253,11 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
         </div>
         
         {/* Área de firma */}
-        <div className="px-8 py-8">
-          <div className="bg-white w-full rounded-lg">
-            {signatureContent}
+        <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="bg-white w-full rounded-lg overflow-x-auto">
+            <div className="min-w-0 w-full">
+              {signatureContent}
+            </div>
           </div>
         </div>
       </div>
