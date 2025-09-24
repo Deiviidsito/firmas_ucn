@@ -1,0 +1,5 @@
+# Netlify redirects configuration
+# Redirect ALL routes to the main page (general approach)
+
+# Redirect any path to the root with 301 (permanent redirect)
+/* / 301
