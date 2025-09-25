@@ -115,23 +115,25 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
   }, [data]);
 
   const signatureContent = (
-    <div className="flex flex-col sm:flex-row items-start sm:items-stretch gap-4 sm:gap-6 min-w-0" ref={signatureRef} lang="es" translate="no">
-      <div className="flex justify-center sm:justify-start shrink-0 w-full sm:w-auto">
+    <div className="flex flex-row items-start gap-4 sm:gap-6 min-w-0" ref={signatureRef} lang="es" translate="no">
+      <div className="flex justify-start shrink-0">
         <img
           src="https://i.imgur.com/sC4luNO.png"
           alt="Logo Universidad Católica del Norte"
-          className="w-20 h-20 sm:w-24 sm:h-24 object-contain"
+          className="object-contain"
           style={{
             width: logoSize,
             height: logoSize,
             maxWidth: '120px',
-            maxHeight: '120px'
+            maxHeight: '120px',
+            minWidth: '60px',
+            minHeight: '60px'
           }}
           loading="eager"
           decoding="async"
         />
       </div>
-      <div className="flex-1 min-w-0 text-center sm:text-left" ref={contentRef}>
+      <div className="flex-1 min-w-0 text-left" ref={contentRef}>
         {data.fullName && (
           <h1 className="font-bold text-base sm:text-lg mb-1 break-words" title={data.fullName}>
             {data.fullName}
@@ -143,11 +145,9 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
           </p>
         ))}
         <p className="text-xs sm:text-sm text-gray-500 leading-tight mb-1">
-          <span className="block sm:inline">Departamento de Ingeniería de Sistemas</span>
-          <span className="hidden sm:inline"> y </span>
-          <span className="block sm:inline">Computación</span>
+          Departamento de Ingeniería de Sistemas y Computación
         </p>
-        <p className="text-xs sm:text-sm text-gray-500 leading-tight mb-1 flex items-center justify-center sm:justify-start">
+        <p className="text-xs sm:text-sm text-gray-500 leading-tight mb-1 flex items-center justify-start">
           <img 
             src="https://i.imgur.com/mmdOunR.png" 
             alt="UCN Logo" 
@@ -176,7 +176,7 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
         
         {/* Íconos sociales */}
         {(data.social?.googleScholar || data.social?.linkedin || data.orcid || data.website || data.isCiaraMemb) && (
-          <div className="flex gap-2 mt-3 justify-center sm:justify-start" role="list" aria-label="Redes sociales">
+          <div className="flex gap-2 mt-3 justify-start" role="list" aria-label="Redes sociales">
             {data.social?.googleScholar && (
               <SocialIcon
                 url={data.social.googleScholar}
@@ -286,7 +286,7 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
         {/* Área de firma */}
         <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="bg-white w-full rounded-lg overflow-x-auto">
-            <div className="min-w-0 w-full">
+            <div className="min-w-[450px] w-full">
               {signatureContent}
             </div>
           </div>
