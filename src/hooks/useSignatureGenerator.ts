@@ -148,8 +148,10 @@ export const useSignatureGenerator = () => {
       ? `<div style="display:flex;gap:3px;margin-top:4px;">
           ${socialLinks.map(({ href, iconSrc, alt, isLogo }) => 
             isLogo 
-              ? `<img src="${iconSrc}" alt="${alt}" style="width:12px;height:12px;display:inline-block;border-radius:2px;background:#fff;" />`
-              : `<a href="${href}" target="_blank" rel="noopener noreferrer" style="display:inline-block;line-height:0;">
+              ? `<span style="display:inline-block;line-height:0;" title="${alt}">
+                  <img src="${iconSrc}" alt="${alt}" style="width:12px;height:12px;display:inline-block;border-radius:2px;background:#fff;" />
+                </span>`
+              : `<a href="${href}" target="_blank" rel="noopener noreferrer" style="display:inline-block;line-height:0;" title="${alt}">
                   <img src="${iconSrc}" alt="${alt}" style="width:12px;height:12px;display:inline-block;border-radius:2px;background:#fff;" />
                 </a>`
           ).join('')}

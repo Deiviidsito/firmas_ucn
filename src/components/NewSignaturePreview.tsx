@@ -56,6 +56,31 @@ const SocialIcon: React.FC<{
   </a>
 );
 
+const LogoIcon: React.FC<{
+  icon: string;
+  alt: string;
+  size?: number;
+}> = ({ icon, alt, size = 18 }) => (
+  <span
+    className="inline-block"
+    style={{ lineHeight: 0 }}
+    title={alt}
+  >
+    <img
+      src={icon}
+      alt={alt}
+      style={{
+        width: size,
+        height: size,
+        display: 'inline-block',
+        borderRadius: 3,
+        background: '#fff'
+      }}
+      loading="lazy"
+    />
+  </span>
+);
+
 const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
   data,
   onCopy,
@@ -206,17 +231,9 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
               />
             )}
             {data.isCiaraMemb && (
-              <img
-                src="https://i.imgur.com/LWlb8oT.png"
-                alt="CIARA"
-                className="w-4 h-4 object-contain"
-                style={{
-                  width: 18,
-                  height: 18,
-                  display: 'inline-block',
-                  borderRadius: 3,
-                  background: '#fff'
-                }}
+              <LogoIcon
+                icon="https://i.imgur.com/LWlb8oT.png"
+                alt="CIARA UCN"
               />
             )}
           </div>
