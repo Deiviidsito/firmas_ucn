@@ -14,6 +14,9 @@ interface SignatureData {
   phone?: string;
   additionalLink?: string;
   additionalLinkText?: string;
+  orcid?: string;
+  website?: string;
+  isCiaraMemb?: boolean;
   social?: SocialLinks;
 }
 
@@ -46,8 +49,7 @@ const SocialIcon: React.FC<{
         height: size,
         display: 'inline-block',
         borderRadius: 3,
-        background: '#fff',
-        boxShadow: '0 0 2px #ccc'
+        background: '#fff'
       }}
       loading="lazy"
     />
@@ -144,7 +146,12 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
           <span className="hidden sm:inline"> y </span>
           <span className="block sm:inline">Computación</span>
         </p>
-        <p className="text-xs sm:text-sm text-gray-500 leading-tight mb-1">
+        <p className="text-xs sm:text-sm text-gray-500 leading-tight mb-1 flex items-center justify-center sm:justify-start">
+          <img 
+            src="https://i.imgur.com/mmdOunR.png" 
+            alt="UCN Logo" 
+            className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 object-contain inline-block"
+          />
           Universidad Católica del Norte
         </p>
         <p className="text-xs sm:text-sm text-gray-500 leading-tight mb-1">
@@ -165,27 +172,48 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
         )}
         
         {/* Íconos sociales */}
-        {(data.social?.googleScholar || data.social?.linkedin || data.social?.orcid) && (
+        {(data.social?.googleScholar || data.social?.linkedin || data.orcid || data.website || data.isCiaraMemb) && (
           <div className="flex gap-2 mt-3 justify-center sm:justify-start" role="list" aria-label="Redes sociales">
             {data.social?.googleScholar && (
               <SocialIcon
                 url={data.social.googleScholar}
-                icon="https://scholar.google.com/favicon.ico"
+                icon="https://i.imgur.com/visHiHK.png"
                 alt="Google Scholar"
               />
             )}
             {data.social?.linkedin && (
               <SocialIcon
                 url={data.social.linkedin}
-                icon="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/32px-LinkedIn_logo_initials.png"
+                icon="https://i.imgur.com/2VBQAgT.png"
                 alt="LinkedIn"
               />
             )}
-            {(data.social?.orcid || data.additionalLink) && (
+            {data.orcid && (
               <SocialIcon
-                url={data.social?.orcid || data.additionalLink || ''}
-                icon="https://upload.wikimedia.org/wikipedia/commons/0/06/ORCID_iD.svg"
+                url={data.orcid}
+                icon="https://i.imgur.com/to2V1e9.png"
                 alt="ORCID"
+              />
+            )}
+            {data.website && (
+              <SocialIcon
+                url={data.website}
+                icon="https://i.imgur.com/HZhe06X.png"
+                alt="Sitio Web"
+              />
+            )}
+            {data.isCiaraMemb && (
+              <img
+                src="https://i.imgur.com/LWlb8oT.png"
+                alt="CIARA"
+                className="w-4 h-4 object-contain"
+                style={{
+                  width: 18,
+                  height: 18,
+                  display: 'inline-block',
+                  borderRadius: 3,
+                  background: '#fff'
+                }}
               />
             )}
           </div>

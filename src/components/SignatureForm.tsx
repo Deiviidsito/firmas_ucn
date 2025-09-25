@@ -8,6 +8,9 @@ interface SignatureData {
   phone?: string;
   additionalLink?: string;
   additionalLinkText?: string;
+  orcid?: string;
+  website?: string;
+  isCiaraMemb?: boolean;
   social?: {
     linkedin?: string;
     googleScholar?: string;
@@ -252,16 +255,57 @@ const SignatureForm: React.FC<SignatureFormProps> = ({
                 <label className={labelClass}>
                   <div className="flex items-center gap-2">
                     <Globe className="w-4 h-4 text-gray-600" />
-                    ORCID / Sitio Web Personal
+                    ORCID
                   </div>
                 </label>
                 <input
                   type="url"
-                  value={data.additionalLink || ''}
-                  onChange={(e) => onUpdate('additionalLink', e.target.value)}
+                  value={data.orcid || ''}
+                  onChange={(e) => onUpdate('orcid', e.target.value)}
                   placeholder="https://orcid.org/0000-0000-0000-0000"
                   className={inputClass}
                 />
+              </div>
+
+              <div>
+                <label className={labelClass}>
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-gray-600" />
+                    Sitio Web Personal
+                  </div>
+                </label>
+                <input
+                  type="url"
+                  value={data.website || ''}
+                  onChange={(e) => onUpdate('website', e.target.value)}
+                  placeholder="https://misitio.cl"
+                  className={inputClass}
+                />
+              </div>
+
+              <div className="border-t pt-5">
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="ciaraMember"
+                    checked={data.isCiaraMemb || false}
+                    onChange={(e) => onUpdate('isCiaraMemb', e.target.checked)}
+                    className="mt-1 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <label htmlFor="ciaraMember" className="text-sm font-medium text-gray-700 cursor-pointer">
+                    <div className="flex items-center gap-2">
+                      <img 
+                        src="https://i.imgur.com/LWlb8oT.png" 
+                        alt="CIARA Logo" 
+                        className="w-5 h-5 object-contain"
+                      />
+                      ¿Perteneces a CIARA?
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Centro de Innovación en Inteligencia Artificial
+                    </p>
+                  </label>
+                </div>
               </div>
             </div>
           )}

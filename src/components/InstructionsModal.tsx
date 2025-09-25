@@ -91,7 +91,15 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose }
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  <strong>ORCID/Sitio Web:</strong> Tu identificador ORCID o sitio web personal
+                  <strong>ORCID:</strong> Tu identificador único de investigador
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <strong>Sitio Web Personal:</strong> Tu página web o portafolio profesional
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <strong>CIARA:</strong> Marca si perteneces al Centro de Innovación en IA
                 </li>
               </ul>
             </div>
@@ -154,9 +162,12 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose }
           <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
             <h3 className="text-lg font-semibold text-blue-800 mb-2">💡 Tips Útiles</h3>
             <ul className="space-y-1 text-sm text-blue-700">
-              <li>• El logo se adapta automáticamente al tamaño de tu firma</li>
+              <li>• El logo UCN se adapta automáticamente al tamaño de tu firma</li>
               <li>• Puedes tener hasta 3 cargos diferentes</li>
-              <li>• La información institucional (departamento, universidad, dirección) se incluye automáticamente</li>
+              <li>• Los campos ORCID y Sitio Web son independientes</li>
+              <li>• El logo de CIARA UCN aparecerá si marcas la casilla correspondiente</li>
+              <li>• Todos los iconos de redes sociales están optimizados para email</li>
+              <li>• La información institucional se incluye automáticamente con logo</li>
               <li>• La firma está optimizada para verse bien en todos los clientes de correo</li>
             </ul>
           </div>

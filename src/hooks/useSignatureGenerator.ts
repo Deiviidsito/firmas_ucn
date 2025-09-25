@@ -7,6 +7,9 @@ export interface SignatureData {
   positions: string[];
   additionalLink?: string;
   additionalLinkText?: string;
+  orcid?: string;
+  website?: string;
+  isCiaraMemb?: boolean;
   social?: {
     linkedin?: string;
     googleScholar?: string;
@@ -20,6 +23,9 @@ export const useSignatureGenerator = () => {
     email: '',
     phone: '',
     positions: [''],
+    orcid: '',
+    website: '',
+    isCiaraMemb: false,
     social: {
       linkedin: '',
       googleScholar: '',
@@ -67,6 +73,9 @@ export const useSignatureGenerator = () => {
       email: '',
       phone: '',
       positions: [''],
+      orcid: '',
+      website: '',
+      isCiaraMemb: false,
       social: {
         linkedin: '',
         googleScholar: '',
@@ -96,7 +105,7 @@ export const useSignatureGenerator = () => {
     if (signatureData.social?.googleScholar) {
       socialLinks.push({
         href: signatureData.social.googleScholar,
-        iconSrc: "https://scholar.google.com/favicon.ico",
+        iconSrc: "https://i.imgur.com/visHiHK.png",
         alt: "Google Scholar"
       });
     }
@@ -104,27 +113,45 @@ export const useSignatureGenerator = () => {
     if (signatureData.social?.linkedin) {
       socialLinks.push({
         href: signatureData.social.linkedin,
-        iconSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/32px-LinkedIn_logo_initials.png",
+        iconSrc: "https://i.imgur.com/2VBQAgT.png",
         alt: "LinkedIn"
       });
     }
     
-    // Convertir el additionalLink en un enlace ORCID si existe
-    if (signatureData.additionalLink) {
+    if (signatureData.orcid) {
       socialLinks.push({
-        href: signatureData.additionalLink,
-        iconSrc: "https://upload.wikimedia.org/wikipedia/commons/0/06/ORCID_iD.svg",
-        alt: "ORCID",
-        type: 'orcid'
+        href: signatureData.orcid,
+        iconSrc: "https://i.imgur.com/to2V1e9.png",
+        alt: "ORCID"
+      });
+    }
+
+    if (signatureData.website) {
+      socialLinks.push({
+        href: signatureData.website,
+        iconSrc: "https://i.imgur.com/HZhe06X.png",
+        alt: "Sitio Web"
+      });
+    }
+
+    // Agregar logo de CIARA si está marcado
+    if (signatureData.isCiaraMemb) {
+      socialLinks.push({
+        href: "",
+        iconSrc: "https://i.imgur.com/LWlb8oT.png",
+        alt: "CIARA UCN",
+        isLogo: true
       });
     }
 
     const socialHTML = socialLinks.length > 0
       ? `<div style="display:flex;gap:3px;margin-top:4px;">
-          ${socialLinks.map(({ href, iconSrc, alt }) => 
-            `<a href="${href}" target="_blank" rel="noopener noreferrer" style="display:inline-block;line-height:0;">
-              <img src="${iconSrc}" alt="${alt}" style="width:12px;height:12px;display:inline-block;border-radius:2px;background:#fff;box-shadow:0 0 1px #ccc;" />
-            </a>`
+          ${socialLinks.map(({ href, iconSrc, alt, isLogo }) => 
+            isLogo 
+              ? `<img src="${iconSrc}" alt="${alt}" style="width:12px;height:12px;display:inline-block;border-radius:2px;background:#fff;" />`
+              : `<a href="${href}" target="_blank" rel="noopener noreferrer" style="display:inline-block;line-height:0;">
+                  <img src="${iconSrc}" alt="${alt}" style="width:12px;height:12px;display:inline-block;border-radius:2px;background:#fff;" />
+                </a>`
           ).join('')}
         </div>`
       : '';
@@ -165,7 +192,10 @@ export const useSignatureGenerator = () => {
                         </tr>
                         <tr>
                           <td style="padding-bottom: 2px;">
-                            <span style="font-size: 11px; color: #6b7280; line-height: 1.15; display: block;">Universidad Católica del Norte</span>
+                            <span style="font-size: 11px; color: #6b7280; line-height: 1.15; display: flex; align-items: center;">
+                              <img src="https://i.imgur.com/mmdOunR.png" alt="UCN Logo" style="width: 11px; height: 11px; margin-right: 3px; object-fit: contain; display: inline-block; vertical-align: middle;" />
+                              Universidad Católica del Norte
+                            </span>
                           </td>
                         </tr>
                         <tr>
