@@ -172,8 +172,8 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose }
                 <iframe
                   width="100%"
                   height="100%"
-                  src="https://www.youtube.com/embed/BKNCODSzWPc"
-                  title="Tutorial: Cómo configurar firma en Gmail"
+                  src="https://www.youtube.com/embed/mLTMNgj1thg"
+                  title="Tutorial: Generador de Firmas UCN - Guía Completa"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -181,7 +181,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose }
                 ></iframe>
               </div>
               <p className="text-sm text-gray-600 mt-2 text-center">
-                Tutorial completo: Desde crear la firma hasta configurarla en Gmail
+                Tutorial oficial: Cómo usar el Generador de Firmas UCN paso a paso
               </p>
             </div>
           </div>
