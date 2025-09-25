@@ -2,6 +2,7 @@ import React from 'react';
 import Header from './components/Header';
 import SignatureForm from './components/SignatureForm';
 import NewSignaturePreview from './components/NewSignaturePreview';
+import ImagePreloader from './components/ImagePreloader';
 import { useSignatureGenerator } from './hooks/useSignatureGenerator';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col" style={{ colorScheme: 'light' }}>
+      <ImagePreloader />
       <Header />
       <main className="flex-1 flex flex-col lg:flex-row">
         {/* Form Section */}

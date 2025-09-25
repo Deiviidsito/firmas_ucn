@@ -158,7 +158,8 @@ export const useSignatureGenerator = () => {
 
     // Tabla contenedora exterior para alinear el logo con la línea inferior
     return `
-    <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; min-width: 450px; border-collapse: collapse;">
+    <div lang="es" translate="no">
+    <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; min-width: 450px; border-collapse: collapse;" lang="es">
       <tr>
         <td>
           <table cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
@@ -187,12 +188,12 @@ export const useSignatureGenerator = () => {
                           `).join('')}
                         <tr>
                           <td style="padding-bottom: 2px;">
-                            <span style="font-size: 11px; color: #6b7280; line-height: 1.15; display: block; white-space: nowrap;">Departamento de Ingeniería de Sistemas y Computación</span>
+                            <span style="font-size: 11px; color: #6b7280; line-height: 1.15; display: block; white-space: nowrap;" lang="es">Departamento de Ingeniería de Sistemas y Computación</span>
                           </td>
                         </tr>
                         <tr>
                           <td style="padding-bottom: 2px;">
-                            <span style="font-size: 11px; color: #6b7280; line-height: 1.15; display: flex; align-items: center;">
+                            <span style="font-size: 11px; color: #6b7280; line-height: 1.15; display: flex; align-items: center;" lang="es">
                               <img src="https://i.imgur.com/mmdOunR.png" alt="UCN Logo" style="width: 11px; height: 11px; margin-right: 3px; object-fit: contain; display: inline-block; vertical-align: middle;" />
                               Universidad Católica del Norte
                             </span>
@@ -200,7 +201,7 @@ export const useSignatureGenerator = () => {
                         </tr>
                         <tr>
                           <td style="padding-bottom: 2px;">
-                            <span style="font-size: 11px; color: #6b7280; line-height: 1.15; display: block;">Av. Angamos 0610, Antofagasta</span>
+                            <span style="font-size: 11px; color: #6b7280; line-height: 1.15; display: block;" lang="es">Av. Angamos 0610, Antofagasta</span>
                           </td>
                         </tr>
                         ${signatureData.phone ? `
@@ -239,6 +240,7 @@ export const useSignatureGenerator = () => {
         </td>
       </tr>
     </table>
+    </div>
     `;
   };
 

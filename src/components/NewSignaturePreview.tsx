@@ -115,7 +115,7 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
   }, [data]);
 
   const signatureContent = (
-    <div className="flex flex-col sm:flex-row items-start sm:items-stretch gap-4 sm:gap-6 min-w-0" ref={signatureRef}>
+    <div className="flex flex-col sm:flex-row items-start sm:items-stretch gap-4 sm:gap-6 min-w-0" ref={signatureRef} lang="es" translate="no">
       <div className="flex justify-center sm:justify-start shrink-0 w-full sm:w-auto">
         <img
           src="https://i.imgur.com/sC4luNO.png"
@@ -127,7 +127,8 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
             maxWidth: '120px',
             maxHeight: '120px'
           }}
-          loading="lazy"
+          loading="eager"
+          decoding="async"
         />
       </div>
       <div className="flex-1 min-w-0 text-center sm:text-left" ref={contentRef}>
@@ -151,6 +152,8 @@ const NewSignaturePreview: React.FC<SignaturePreviewProps> = ({
             src="https://i.imgur.com/mmdOunR.png" 
             alt="UCN Logo" 
             className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 object-contain inline-block"
+            loading="eager"
+            decoding="async"
           />
           Universidad Católica del Norte
         </p>
