@@ -1,4 +1,3 @@
-import React from 'react';
 import Header from './components/Header';
 import SignatureForm from './components/SignatureForm';
 import NewSignaturePreview from './components/NewSignaturePreview';
@@ -14,11 +13,11 @@ function App() {
     addPosition,
     removePosition,
     copyToClipboard,
-    resetForm
+    resetForm,
+    isFormValid
   } = useSignatureGenerator();
 
-  const hasPosition = signatureData.positions && signatureData.positions.some(pos => pos.trim() !== '');
-  const isFormValid = signatureData.fullName && hasPosition && signatureData.email;
+  const formIsValid = isFormValid();
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col" style={{ colorScheme: 'light' }}>
@@ -44,7 +43,7 @@ function App() {
               data={signatureData}
               onCopy={copyToClipboard}
               success={copySuccess}
-              disabled={!isFormValid}
+              disabled={!formIsValid}
             />
           </div>
         </section>

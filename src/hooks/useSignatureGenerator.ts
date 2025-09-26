@@ -35,6 +35,13 @@ export const useSignatureGenerator = () => {
 
   const [copySuccess, setCopySuccess] = useState(false);
 
+  const isFormValid = () => {
+    const hasPosition = signatureData.positions && signatureData.positions.some(pos => pos.trim() !== '');
+    return signatureData.fullName.trim() !== '' && 
+           hasPosition && 
+           signatureData.email.trim() !== '';
+  };
+
   const updateField = (field: keyof SignatureData, value: string | string[]) => {
     setSignatureData(prev => ({
       ...prev,
@@ -280,6 +287,7 @@ export const useSignatureGenerator = () => {
     removePosition,
     resetForm,
     generateHTML,
-    copyToClipboard
+    copyToClipboard,
+    isFormValid
   };
 };

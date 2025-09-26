@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, User, Briefcase, Link, Globe, GraduationCap } from 'lucide-react';
+import { Mail, Phone, User, Briefcase, Link, Globe, GraduationCap, AlertCircle } from 'lucide-react';
 
 interface SignatureData {
   fullName: string;
@@ -35,9 +35,139 @@ const SignatureForm: React.FC<SignatureFormProps> = ({
   onReset 
 }) => {
   const [activeTab, setActiveTab] = useState<'personal' | 'academic'>('personal');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   
   const inputClass = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-800 bg-white";
+  const inputErrorClass = "w-full px-4 py-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 text-gray-800 bg-red-50";
   const labelClass = "block text-sm font-medium text-gray-700 mb-2";
+
+  // Funciones de validación
+  const validateField = (fieldName: string, value: string): string => {
+    switch (fieldName) {
+      case 'fullName':
+        if (!value.trim()) return 'El nombre completo es obligatorio';
+        if (value.length > 60) return 'El nombre no debe exceder 60 caracteres';
+        if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\-'\.]+$/.test(value)) return 'Solo se permiten letras, espacios y caracteres básicos';
+        return '';
+      
+      case 'email':
+        if (!value.trim()) return 'El email es obligatorio';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Formato de email inválido';
+        if (!value.includes('@ucn.cl')) return 'Se recomienda usar el email institucional (@ucn.cl)';
+        return '';
+      
+      case 'phone':
+        if (value && !/^\+56\s9\s\d{4}\s\d{4}$/.test(value)) {
+          return 'Formato sugerido: +56 9 XXXX XXXX';
+        }
+        return '';
+      
+      case 'website':
+        if (value && !/^https?:\/\/.+/.test(value)) {
+          return 'La URL debe comenzar con http:// o https://';
+        }
+        return '';
+      
+      case 'orcid':
+        if (value && !/^https:\/\/orcid\.org\/\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(value)) {
+          return 'Formato ORCID: https://orcid.org/0000-0000-0000-0000';
+        }
+        return '';
+      
+      case 'googleScholar':
+        if (value && !value.includes('scholar.google.com')) {
+          return 'Debe ser una URL válida de Google Scholar';
+        }
+        return '';
+      
+      case 'linkedin':
+        if (value && !value.includes('linkedin.com')) {
+          return 'Debe ser una URL válida de LinkedIn';
+        }
+        return '';
+      
+      default:
+        return '';
+    }
+  };
+
+  const validatePosition = (value: string): string => {
+    if (!value.trim()) return 'El cargo es obligatorio';
+    if (value.length > 80) return 'El cargo no debe exceder 80 caracteres';
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\-',\.0-9()]+$/.test(value)) return 'Contiene caracteres no permitidos';
+    return '';
+  };
+
+  const handleFieldChange = (fieldName: string, value: string) => {
+    // Actualizar el valor
+    onUpdate(fieldName as keyof SignatureData, value);
+    
+    // Limpiar error si el campo ya no tiene errores
+    const error = validateField(fieldName, value);
+    setFieldErrors(prev => ({
+      ...prev,
+      [fieldName]: error
+    }));
+  };
+
+  const handleFieldBlur = (fieldName: string, value: string) => {
+    setTouchedFields(prev => ({ ...prev, [fieldName]: true }));
+    const error = validateField(fieldName, value);
+    setFieldErrors(prev => ({
+      ...prev,
+      [fieldName]: error
+    }));
+  };
+
+  const handlePositionChange = (index: number, value: string) => {
+    onUpdatePosition(index, value);
+    const error = validatePosition(value);
+    setFieldErrors(prev => ({
+      ...prev,
+      [`position_${index}`]: error
+    }));
+  };
+
+  const handlePositionBlur = (index: number, value: string) => {
+    setTouchedFields(prev => ({ ...prev, [`position_${index}`]: true }));
+    const error = validatePosition(value);
+    setFieldErrors(prev => ({
+      ...prev,
+      [`position_${index}`]: error
+    }));
+  };
+
+  const getInputClassName = (fieldName: string) => {
+    const hasError = fieldErrors[fieldName] && touchedFields[fieldName];
+    return hasError ? inputErrorClass : inputClass;
+  };
+
+  const ErrorMessage: React.FC<{ fieldName: string }> = ({ fieldName }) => {
+    const error = fieldErrors[fieldName];
+    const isTouched = touchedFields[fieldName];
+    
+    if (!error || !isTouched) return null;
+    
+    return (
+      <div className="flex items-center mt-1 text-sm text-red-600">
+        <AlertCircle className="w-4 h-4 mr-1 flex-shrink-0" />
+        <span>{error}</span>
+      </div>
+    );
+  };
+
+  const CharacterCounter: React.FC<{ current: number; max: number }> = ({ current, max }) => {
+    const isNearLimit = current > max * 0.8;
+    const isOverLimit = current > max;
+    
+    return (
+      <div className={`text-xs mt-1 ${isOverLimit ? 'text-red-500' : isNearLimit ? 'text-orange-500' : 'text-gray-500'}`}>
+        {current}/{max} caracteres
+        {isOverLimit && ' (excede el límite)'}
+      </div>
+    );
+  };
 
   return (
     <div className="h-full bg-white">
@@ -134,10 +264,14 @@ const SignatureForm: React.FC<SignatureFormProps> = ({
                   type="text"
                   id="fullName"
                   value={data.fullName}
-                  onChange={(e) => onUpdate('fullName', e.target.value)}
+                  onChange={(e) => handleFieldChange('fullName', e.target.value)}
+                  onBlur={(e) => handleFieldBlur('fullName', e.target.value)}
                   placeholder="Ej: Matías Saavedra"
-                  className={inputClass}
+                  className={getInputClassName('fullName')}
+                  maxLength={70}
                 />
+                <CharacterCounter current={data.fullName?.length || 0} max={60} />
+                <ErrorMessage fieldName="fullName" />
               </div>
 
               <div>
@@ -149,32 +283,38 @@ const SignatureForm: React.FC<SignatureFormProps> = ({
                 </label>
                 <div className="space-y-3">
                   {data.positions.map((pos, idx) => (
-                    <div key={idx} className="flex gap-2 items-center">
-                      <input
-                        type="text"
-                        value={pos}
-                        onChange={(e) => onUpdatePosition(idx, e.target.value)}
-                        placeholder={`Cargo ${idx + 1}`}
-                        className={`${inputClass} flex-1`}
-                      />
-                      {data.positions.length > 1 && idx > 0 && (
-                        <button 
-                          type="button" 
-                          onClick={() => onRemovePosition(idx)} 
-                          className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition flex items-center justify-center font-bold shrink-0"
-                        >
-                          –
-                        </button>
-                      )}
-                      {idx === data.positions.length - 1 && data.positions.length < 3 && (
-                        <button 
-                          type="button" 
-                          onClick={onAddPosition} 
-                          className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition flex items-center justify-center font-bold shrink-0"
-                        >
-                          +
-                        </button>
-                      )}
+                    <div key={idx} className="space-y-1">
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="text"
+                          value={pos}
+                          onChange={(e) => handlePositionChange(idx, e.target.value)}
+                          onBlur={(e) => handlePositionBlur(idx, e.target.value)}
+                          placeholder={`Cargo ${idx + 1}`}
+                          className={`${getInputClassName(`position_${idx}`)} flex-1`}
+                          maxLength={90}
+                        />
+                        {data.positions.length > 1 && idx > 0 && (
+                          <button 
+                            type="button" 
+                            onClick={() => onRemovePosition(idx)} 
+                            className="w-10 h-10 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition flex items-center justify-center font-bold shrink-0"
+                          >
+                            –
+                          </button>
+                        )}
+                        {idx === data.positions.length - 1 && data.positions.length < 3 && (
+                          <button 
+                            type="button" 
+                            onClick={onAddPosition} 
+                            className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition flex items-center justify-center font-bold shrink-0"
+                          >
+                            +
+                          </button>
+                        )}
+                      </div>
+                      <CharacterCounter current={pos?.length || 0} max={80} />
+                      <ErrorMessage fieldName={`position_${idx}`} />
                     </div>
                   ))}
                 </div>
@@ -191,10 +331,12 @@ const SignatureForm: React.FC<SignatureFormProps> = ({
                   type="email"
                   id="email"
                   value={data.email}
-                  onChange={(e) => onUpdate('email', e.target.value)}
+                  onChange={(e) => handleFieldChange('email', e.target.value)}
+                  onBlur={(e) => handleFieldBlur('email', e.target.value)}
                   placeholder="Ej: msaavedra@ucn.cl"
-                  className={inputClass}
+                  className={getInputClassName('email')}
                 />
+                <ErrorMessage fieldName="email" />
               </div>
 
               <div>
@@ -208,10 +350,12 @@ const SignatureForm: React.FC<SignatureFormProps> = ({
                   type="tel"
                   id="phone"
                   value={data.phone || ''}
-                  onChange={(e) => onUpdate('phone', e.target.value)}
-                  placeholder="Ej: +56 55 355 1234"
-                  className={inputClass}
+                  onChange={(e) => handleFieldChange('phone', e.target.value)}
+                  onBlur={(e) => handleFieldBlur('phone', e.target.value)}
+                  placeholder="Ej: +56 9 1234 5678"
+                  className={getInputClassName('phone')}
                 />
+                <ErrorMessage fieldName="phone" />
               </div>
             </div>
           )}
@@ -229,10 +373,16 @@ const SignatureForm: React.FC<SignatureFormProps> = ({
                 <input
                   type="url"
                   value={data.social?.googleScholar || ''}
-                  onChange={(e) => onUpdate('social', { ...data.social, googleScholar: e.target.value })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onUpdate('social', { ...data.social, googleScholar: value });
+                    handleFieldChange('googleScholar', value);
+                  }}
+                  onBlur={(e) => handleFieldBlur('googleScholar', e.target.value)}
                   placeholder="https://scholar.google.com/citations?user=..."
-                  className={inputClass}
+                  className={getInputClassName('googleScholar')}
                 />
+                <ErrorMessage fieldName="googleScholar" />
               </div>
 
               <div>
@@ -245,10 +395,16 @@ const SignatureForm: React.FC<SignatureFormProps> = ({
                 <input
                   type="url"
                   value={data.social?.linkedin || ''}
-                  onChange={(e) => onUpdate('social', { ...data.social, linkedin: e.target.value })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onUpdate('social', { ...data.social, linkedin: value });
+                    handleFieldChange('linkedin', value);
+                  }}
+                  onBlur={(e) => handleFieldBlur('linkedin', e.target.value)}
                   placeholder="https://www.linkedin.com/in/usuario"
-                  className={inputClass}
+                  className={getInputClassName('linkedin')}
                 />
+                <ErrorMessage fieldName="linkedin" />
               </div>
 
               <div>
@@ -261,10 +417,12 @@ const SignatureForm: React.FC<SignatureFormProps> = ({
                 <input
                   type="url"
                   value={data.orcid || ''}
-                  onChange={(e) => onUpdate('orcid', e.target.value)}
+                  onChange={(e) => handleFieldChange('orcid', e.target.value)}
+                  onBlur={(e) => handleFieldBlur('orcid', e.target.value)}
                   placeholder="https://orcid.org/0000-0000-0000-0000"
-                  className={inputClass}
+                  className={getInputClassName('orcid')}
                 />
+                <ErrorMessage fieldName="orcid" />
               </div>
 
               <div>
@@ -277,10 +435,12 @@ const SignatureForm: React.FC<SignatureFormProps> = ({
                 <input
                   type="url"
                   value={data.website || ''}
-                  onChange={(e) => onUpdate('website', e.target.value)}
+                  onChange={(e) => handleFieldChange('website', e.target.value)}
+                  onBlur={(e) => handleFieldBlur('website', e.target.value)}
                   placeholder="https://misitio.cl"
-                  className={inputClass}
+                  className={getInputClassName('website')}
                 />
+                <ErrorMessage fieldName="website" />
               </div>
 
               <div className="border-t pt-5">
